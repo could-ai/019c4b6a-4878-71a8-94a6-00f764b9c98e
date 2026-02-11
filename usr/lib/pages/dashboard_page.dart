@@ -1,7 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:couldai_user_app/models/models.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  // Mock data for dashboard
+  double totalRevenue = 12450000;
+  double totalExpenses = 4200000;
+  double netResult = 8250000;
+  int activeClients = 142;
+  int pendingInvoices = 8;
+
+  final List<Map<String, dynamic>> recentActivities = [
+    {'title': 'Facture #INV-001 payée', 'time': 'Il y a 2h', 'type': 'payment'},
+    {'title': 'Nouveau client ajouté', 'time': 'Il y a 4h', 'type': 'client'},
+    {'title': 'Dépense \'Loyer\' enregistrée', 'time': 'Hier', 'type': 'expense'},
+    {'title': 'Bulletin de paie généré', 'time': 'Hier', 'type': 'payroll'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +52,7 @@ class DashboardPage extends StatelessWidget {
                   _buildKpiCard(
                     context,
                     "Chiffre d'Affaires",
-                    "12,450,000 XOF",
+                    "${(totalRevenue / 1000).toStringAsFixed(0)}k XOF",
                     "+12% vs mois dernier",
                     Icons.trending_up,
                     Colors.green,
@@ -40,7 +60,7 @@ class DashboardPage extends StatelessWidget {
                   _buildKpiCard(
                     context,
                     "Dépenses",
-                    "4,200,000 XOF",
+                    "${(totalExpenses / 1000).toStringAsFixed(0)}k XOF",
                     "-5% vs mois dernier",
                     Icons.trending_down,
                     Colors.red,
@@ -48,7 +68,7 @@ class DashboardPage extends StatelessWidget {
                   _buildKpiCard(
                     context,
                     "Résultat Net",
-                    "8,250,000 XOF",
+                    "${(netResult / 1000).toStringAsFixed(0)}k XOF",
                     "+22% vs mois dernier",
                     Icons.account_balance,
                     Colors.blue,
@@ -56,7 +76,7 @@ class DashboardPage extends StatelessWidget {
                   _buildKpiCard(
                     context,
                     "Clients Actifs",
-                    "142",
+                    activeClients.toString(),
                     "+8 nouveaux",
                     Icons.people,
                     Colors.orange,
@@ -67,7 +87,7 @@ class DashboardPage extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           
-          // Recent Activity & Charts Placeholder
+          // Charts and Activities
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -84,7 +104,7 @@ class DashboardPage extends StatelessWidget {
                         Container(
                           height: 300,
                           color: Colors.grey[100],
-                          child: const Center(child: Text("Graphique (À implémenter avec fl_chart)")),
+                          child: const Center(child: Text("Graphique (Intégration fl_chart à venir)")),
                         ),
                       ],
                     ),
@@ -100,18 +120,59 @@ class DashboardPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text("Activités Récentes", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Activités Récentes", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                            TextButton(
+                              onPressed: () {},
+                              child: const Text('Voir tout'),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 16),
-                        _buildActivityItem("Facture #INV-001 payée", "Il y a 2h", Colors.green),
-                        _buildActivityItem("Nouveau client ajouté", "Il y a 4h", Colors.blue),
-                        _buildActivityItem("Dépense 'Loyer' enregistrée", "Hier", Colors.orange),
-                        _buildActivityItem("Bulletin de paie généré", "Hier", Colors.purple),
+                        ...recentActivities.map((activity) => _buildActivityItem(activity)),
                       ],
                     ),
                   ),
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 32),
+          
+          // Subscription Banner
+          Card(
+            color: Colors.blue[50],
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Plan PME - 99 000 XOF/mois',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const Text(
+                        'Échéance le 15 décembre 2024',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Mettre à niveau'),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -141,19 +202,46 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildActivityItem(String title, String time, Color color) {
+  Widget _buildActivityItem(Map<String, dynamic> activity) {
+    IconData icon;
+    Color color;
+    
+    switch (activity['type']) {
+      case 'payment':
+        icon = Icons.payment;
+        color = Colors.green;
+        break;
+      case 'client':
+        icon = Icons.person_add;
+        color = Colors.blue;
+        break;
+      case 'expense':
+        icon = Icons.receipt;
+        color = Colors.orange;
+        break;
+      case 'payroll':
+        icon = Icons.account_balance_wallet;
+        color = Colors.purple;
+        break;
+      default:
+        icon = Icons.info;
+        color = Colors.grey;
+    }
+    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
           Container(
-            width: 10,
-            height: 10,
+            width: 8,
+            height: 8,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 12),
-          Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w500))),
-          Text(time, style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 8),
+          Expanded(child: Text(activity['title'], style: const TextStyle(fontWeight: FontWeight.w500))),
+          Text(activity['time'], style: TextStyle(color: Colors.grey[500], fontSize: 12)),
         ],
       ),
     );
