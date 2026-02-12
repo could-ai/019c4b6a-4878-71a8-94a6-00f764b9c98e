@@ -22,6 +22,32 @@ class Invoice {
     required this.total,
     required this.paidAmount,
   });
+
+  Invoice copyWith({
+    String? id,
+    String? number,
+    String? clientId,
+    String? clientName,
+    DateTime? date,
+    DateTime? dueDate,
+    String? status,
+    List<InvoiceItem>? items,
+    double? total,
+    double? paidAmount,
+  }) {
+    return Invoice(
+      id: id ?? this.id,
+      number: number ?? this.number,
+      clientId: clientId ?? this.clientId,
+      clientName: clientName ?? this.clientName,
+      date: date ?? this.date,
+      dueDate: dueDate ?? this.dueDate,
+      status: status ?? this.status,
+      items: items ?? this.items,
+      total: total ?? this.total,
+      paidAmount: paidAmount ?? this.paidAmount,
+    );
+  }
 }
 
 class InvoiceItem {

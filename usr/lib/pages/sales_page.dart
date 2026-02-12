@@ -44,8 +44,22 @@ class _SalesPageState extends State<SalesPage> with SingleTickerProviderStateMix
   ];
 
   final List<Client> clients = [
-    Client(id: '1', name: 'Tech Solutions SARL', email: 'contact@techsol.com'),
-    Client(id: '2', name: 'Jean Dupont', email: 'jean.d@gmail.com'),
+    Client(
+      id: '1', 
+      name: 'Tech Solutions SARL', 
+      email: 'contact@techsol.com',
+      phone: '+225 01010101',
+      type: 'Entreprise',
+      status: 'Actif',
+    ),
+    Client(
+      id: '2', 
+      name: 'Jean Dupont', 
+      email: 'jean.d@gmail.com',
+      phone: '+225 02020202',
+      type: 'Particulier',
+      status: 'Actif',
+    ),
   ];
 
   @override
@@ -281,8 +295,12 @@ class _SalesPageState extends State<SalesPage> with SingleTickerProviderStateMix
         setState(() {
           final index = invoices.indexWhere((i) => i.id == invoice.id);
           if (index != -1) {
-            invoices[index].paidAmount += payment;
-            invoices[index].status = invoices[index].paidAmount >= invoices[index].total ? 'Payée' : 'Partiellement payée';
+            final newPaidAmount = invoices[index].paidAmount + payment;
+            final newStatus = newPaidAmount >= invoices[index].total ? 'Payée' : 'Partiellement payée';
+            invoices[index] = invoices[index].copyWith(
+              paidAmount: newPaidAmount,
+              status: newStatus,
+            );
           }
         });
       }
